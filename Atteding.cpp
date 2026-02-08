@@ -2,8 +2,55 @@
 
 using namespace std;
 
-//Define the structs Workshops and Available_Workshops.
-//Implement the functions initialize and CalculateMaxWorkshops
+struct Workshop {
+    int start_time;
+    int duration;
+    int end_time;
+};
+
+// Struct for all available workshops
+struct Available_Workshops {
+    int n; // number of workshops
+    Workshop* workshops; // dynamic array of workshops
+};
+
+// Initialize function
+Available_Workshops* initialize(int start_time[], int duration[], int n) {
+    Available_Workshops* aw = new Available_Workshops;
+    aw->n = n;
+    aw->workshops = new Workshop[n];
+    
+    for(int i = 0; i < n; i++) {
+        aw->workshops[i].start_time = start_time[i];
+        aw->workshops[i].duration = duration[i];
+        aw->workshops[i].end_time = start_time[i] + duration[i];
+    }
+    
+    return aw;
+}
+
+// Function to calculate maximum number of non-overlapping workshops
+int CalculateMaxWorkshops(Available_Workshops* ptr) {
+    // Extract workshops
+    vector<Workshop> ws(ptr->workshops, ptr->workshops + ptr->n);
+    
+    // Sort workshops by end time (greedy approach)
+    sort(ws.begin(), ws.end(), [](Workshop a, Workshop b) {
+        return a.end_time < b.end_time;
+    });
+    
+    int count = 0;
+    int last_end_time = 0;
+    
+    for(auto w : ws) {
+        if(w.start_time >= last_end_time) {
+            count++;
+            last_end_time = w.end_time;
+        }
+    }
+    
+    return count;
+}
 
 int main(int argc, char *argv[]) {
     int n; // number of workshops
